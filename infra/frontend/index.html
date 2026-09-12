@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duo Semantle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14171f;
+    --bg-raised: #1b1f2a;
+    --text: #f1ede4;
+    --muted: #8b92a5;
+    --amber: #e8a33d;
+    --amber-dim: #6b5427;
+    --teal: #3fa7a0;
+    --teal-dim: #285451;
+    --border: #2a2f3d;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(32px, 6vw, 48px);
+    margin: 0 0 6px;
+    line-height: 1.05;
+    background: linear-gradient(90deg, var(--amber), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 32px;
+    line-height: 1.5;
+  }
+
+  .guess-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  input[type="text"]:focus-visible {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(63, 167, 160, 0.25);
+  }
+
+  input[type="text"]:disabled {
+    opacity: 0.4;
+  }
+
+  button {
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+  }
+
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(0); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
+  button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .status-line {
+    min-height: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .status-line.error { color: #d97757; }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .dot.a { background: var(--amber); }
+  .dot.b { background: var(--teal); }
+
+  .history {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .row {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .row.solved-row {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 1px rgba(232, 163, 61, 0.3);
+  }
+
+  .row-word {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .badge {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .badge.a { background: var(--amber); color: var(--bg); }
+  .badge.b { background: var(--teal); color: var(--bg); }
+
+  .meter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .meter:last-child { margin-bottom: 0; }
+
+  .meter-label {
+    width: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .meter-track {
+    flex: 1;
+    height: 8px;
+    background: #0f1219;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  .meter-fill.a { background: linear-gradient(90deg, var(--amber-dim), var(--amber)); }
+  .meter-fill.b { background: linear-gradient(90deg, var(--teal-dim), var(--teal)); }
+
+  .meter-fill.hot { filter: drop-shadow(0 0 6px currentColor); }
+
+  .meter-score {
+    width: 48px;
+    text-align: right;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .empty {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+  }
+
+  .win-banner {
+    background: var(--bg-raised);
+    border: 1px solid var(--amber);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .win-banner h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    margin: 0 0 6px;
+    color: var(--amber);
+  }
+
+  .win-banner p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Two words &middot; one guess at a time</div>
+  <h1>Duo Semantle</h1>
+  <p class="sub">Every guess is scored against two hidden words at once. Watch both meters &mdash; the game ends for today once you've named them both.</p>
+
+  <div id="winBanner"></div>
+
+  <div class="guess-row">
+    <input type="text" id="guessInput" placeholder="Type a word..." autocomplete="off" spellcheck="false">
+    <button id="guessBtn">Guess</button>
+  </div>
+  <div class="status-line" id="statusLine"></div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot a"></span> Word A</div>
+    <div class="legend-item"><span class="dot b"></span> Word B</div>
+  </div>
+
+  <div class="history" id="history">
+    <div class="empty">No guesses yet &mdash; start with any word.</div>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://i76du3keu8.execute-api.ap-south-1.amazonaws.com/guess";
+const sessionId = crypto.randomUUID();
+
+let solvedA = false;
+let solvedB = false;
+
+const input = document.getElementById('guessInput');
+const btn = document.getElementById('guessBtn');
+const statusLine = document.getElementById('statusLine');
+const historyEl = document.getElementById('history');
+const winBanner = document.getElementById('winBanner');
+
+function setStatus(msg, isError) {
+  statusLine.textContent = msg || '';
+  statusLine.className = 'status-line' + (isError ? ' error' : '');
+}
+
+function meterHtml(label, score, cls) {
+  const pct = Math.max(0, Math.min(100, score));
+  const hot = pct >= 80 ? ' hot' : '';
+  return `
+    <div class="meter">
+      <span class="meter-label">${label}</span>
+      <div class="meter-track">
+        <div class="meter-fill ${cls}${hot}" style="width:${pct}%"></div>
+      </div>
+      <span class="meter-score">${score.toFixed(2)}</span>
+    </div>
+  `;
+}
+
+function renderHistory(history) {
+  if (!history || history.length === 0) {
+    historyEl.innerHTML = '<div class="empty">No guesses yet &mdash; start with any word.</div>';
+    return;
+  }
+
+  historyEl.innerHTML = history.map(g => {
+    const isSolvedRow = g.score_a === 100 || g.score_b === 100;
+    const badges = [
+      g.score_a === 100 ? '<span class="badge a">A match</span>' : '',
+      g.score_b === 100 ? '<span class="badge b">B match</span>' : '',
+    ].filter(Boolean).join(' ');
+
+    return `
+      <div class="row${isSolvedRow ? ' solved-row' : ''}">
+        <div class="row-word">
+          <span>${g.word}</span>
+          <span>${badges}</span>
+        </div>
+        ${meterHtml('A', g.score_a, 'a')}
+        ${meterHtml('B', g.score_b, 'b')}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWinState() {
+  if (solvedA && solvedB) {
+    winBanner.innerHTML = `
+      <div class="win-banner">
+        <h2>Both words found</h2>
+        <p>Nice work. A new pair goes live tomorrow.</p>
+      </div>
+    `;
+    input.disabled = true;
+    btn.disabled = true;
+    input.placeholder = "Come back tomorrow";
+  } else if (solvedA || solvedB) {
+    winBanner.innerHTML = `
+      <div class="win-banner">
+        <h2>${solvedA ? 'Word A' : 'Word B'} found &mdash; one to go</h2>
+        <p>Keep guessing to find the other word.</p>
+      </div>
+    `;
+  } else {
+    winBanner.innerHTML = '';
+  }
+}
+
+async function submitGuess() {
+  const word = input.value.trim();
+  if (!word) return;
+  if (solvedA && solvedB) return;
+
+  btn.disabled = true;
+  setStatus('Scoring...', false);
+
+  try {
+    const url = `${API_URL}?session_id=${encodeURIComponent(sessionId)}&guess=${encodeURIComponent(word)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.valid) {
+      setStatus(`"${word}" isn't in the word list.`, true);
+      btn.disabled = solvedA && solvedB;
+      return;
+    }
+
+    if (!data.scored) {
+      setStatus(`"${word}" is valid but has no score available.`, true);
+      btn.disabled = solvedA && solvedB;
+      return;
+    }
+
+    if (data.score_a === 100) solvedA = true;
+    if (data.score_b === 100) solvedB = true;
+
+    renderHistory(data.history);
+    renderWinState();
+    setStatus('', false);
+    input.value = '';
+  } catch (err) {
+    setStatus('Could not reach the game right now. Try again.', true);
+  } finally {
+    btn.disabled = solvedA && solvedB;
+    if (!(solvedA && solvedB)) input.focus();
+  }
+}
+
+btn.addEventListener('click', submitGuess);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitGuess();
+});
+</script>
+</body>
+</html>

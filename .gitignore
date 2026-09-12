@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv*/
+*.egg-info/
+
+# Node / CDK
+node_modules/
+cdk.out/
+*.js
+!lib/**/*.js
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large/generated data (regenerate via scripts, don't commit)
+*.bin
+scowl.db
+count_1w.txt
+
+# Editor
+.idea/
+.vscode/
