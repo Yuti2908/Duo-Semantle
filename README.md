@@ -2,8 +2,6 @@
 
 A daily word-guessing game inspired by [Semantle](https://semantle.com/), with a twist: every guess is scored against **two** hidden target words at once, using semantic similarity from pretrained word embeddings.
 
-Live demo: _(pending ? CloudFront pending AWS account verification)_
-
 ## How it works
 
 Each day, two semantically dissimilar target words are chosen automatically. Players submit guesses; each guess is scored against both targets using cosine similarity between fastText word embeddings. The game ends for the day once both targets have been found.
